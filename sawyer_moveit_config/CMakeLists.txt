@@ -6,8 +6,8 @@ find_package(ament_cmake REQUIRED)
 
 
 install(
-        DIRECTORY launch srdf config
-        DESTINATION share/sawyer_description
+        DIRECTORY launch srdf config rviz
+        DESTINATION share/sawyer_moveit_config
 )
 
 
