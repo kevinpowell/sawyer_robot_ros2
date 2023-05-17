@@ -49,13 +49,16 @@ def generate_launch_description():
     with open(PATH_TO_SRDF, 'r') as f:
         robot_description_semantic_content = f.read()
 
+    kinematics_path = os.path.join(get_package_share_directory("sawyer_moveit_config"),
+                                   "config",
+                                   "sawyer_parameters.yaml")
+
     move_group_node = Node(package='moveit_ros_move_group', executable='move_group',
                            output='screen',
-                           parameters=[{
-                               'robot_description': robot_description_content,
-                               'robot_description_semantic': robot_description_semantic_content,
-                               # More params
-                           }],
+                           parameters=[{'robot_description': robot_description_content},
+                                       {'robot_description_semantic': robot_description_semantic_content},
+                                       kinematics_path,
+                                       ],
                            )
 
     rviz_config_file = PathJoinSubstitution(
@@ -68,15 +71,35 @@ def generate_launch_description():
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
-        parameters=[{
-            'robot_description_semantic': robot_description_semantic_content,
-        }]
+        parameters=[
+            {'robot_description_semantic': robot_description_semantic_content},
+            kinematics_path,
+        ]
+    )
+
+    initial_joint_controllers = PathJoinSubstitution(
+        [FindPackageShare("sawyer_moveit_config"), "config", "ros2_controllers.yaml"]
+    )
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            initial_joint_controllers,
+        ],
+    )
+
+    joint_trajectory_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_trajectory_controller", "-c", "/controller_manager", "--stopped"],
     )
 
     nodes_to_start = [
+        control_node,
         robot_state_publisher_node,
         rviz_node,
         move_group_node,
+        joint_trajectory_controller_spawner
     ]
 
     return LaunchDescription(nodes_to_start)

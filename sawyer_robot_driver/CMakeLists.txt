@@ -5,6 +5,7 @@ find_package(ament_cmake REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(hardware_interface REQUIRED)
+find_package(intera_core_msgs REQUIRED)
 
 add_library(
     sawyer_robot_driver
@@ -20,9 +21,10 @@ target_include_directories(
 
 ament_target_dependencies(
     sawyer_robot_driver
+    hardware_interface
+    intera_core_msgs
     pluginlib
     rcpputils
-    hardware_interface
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,

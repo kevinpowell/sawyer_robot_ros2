@@ -1,111 +1,88 @@
 #include "sawyer_robot_driver/sawyer_robot_driver.hpp"
+#include "intera_core_msgs/msg/joint_command.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
+
 #include <string>
 #include <vector>
 
-namespace sawyer_robot_driver
-{
-CallbackReturn RobotSystem::on_init(const hardware_interface::HardwareInfo & info)
-{
-  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS)
-  {
-    return CallbackReturn::ERROR;
-  }
+namespace sawyer_robot_driver {
+    CallbackReturn RobotSystem::on_init(const hardware_interface::HardwareInfo &info) {
+        if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
+            return CallbackReturn::ERROR;
+        }
 
-  // robot has 6 joints and 2 interfaces
-  joint_position_.assign(6, 0);
-  joint_velocities_.assign(6, 0);
-  joint_position_command_.assign(6, 0);
-  joint_velocities_command_.assign(6, 0);
 
-  // force sensor has 6 readings
-  ft_states_.assign(6, 0);
-  ft_command_.assign(6, 0);
+        intera_core_msgs::msg::JointCommand cmd_msg;
+        sensor_msgs::msg::JointState state_msg;
 
-  for (const auto & joint : info_.joints)
-  {
-    for (const auto & interface : joint.state_interfaces)
-    {
-      joint_interfaces[interface.name].push_back(joint.name);
+
+        // robot has 7 joints and 2 interfaces
+        joint_position_.assign(7, 0);
+        joint_velocities_.assign(7, 0);
+        joint_efforts_.assign(7, 0);
+
+        // only offer velocity control
+        joint_velocities_command_.assign(7, 0);
+
+
+        for (const auto &joint: info_.joints) {
+            for (const auto &interface: joint.state_interfaces) {
+                joint_interfaces[interface.name].push_back(joint.name);
+            }
+        }
+
+        return CallbackReturn::SUCCESS;
     }
-  }
 
-  return CallbackReturn::SUCCESS;
-}
+    std::vector<hardware_interface::StateInterface> RobotSystem::export_state_interfaces() {
+        std::vector<hardware_interface::StateInterface> state_interfaces;
 
-std::vector<hardware_interface::StateInterface> RobotSystem::export_state_interfaces()
-{
-  std::vector<hardware_interface::StateInterface> state_interfaces;
+        int ind = 0;
+        for (const auto &joint_name: joint_interfaces["velocity"]) {
+            state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
+        }
+        ind = 0;
+        for (const auto &joint_name: joint_interfaces["position"]) {
+            state_interfaces.emplace_back(joint_name, "position", &joint_velocities_[ind++]);
+        }
+        ind = 0;
+        for (const auto &joint_name: joint_interfaces["effort"]) {
+            state_interfaces.emplace_back(joint_name, "effort", &joint_velocities_[ind++]);
+        }
 
-  int ind = 0;
-  for (const auto & joint_name : joint_interfaces["position"])
-  {
-    state_interfaces.emplace_back(joint_name, "position", &joint_position_[ind++]);
-  }
+        return state_interfaces;
+    }
 
-  ind = 0;
-  for (const auto & joint_name : joint_interfaces["velocity"])
-  {
-    state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
-  }
+    std::vector<hardware_interface::CommandInterface> RobotSystem::export_command_interfaces() {
+        std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-  state_interfaces.emplace_back("tcp_fts_sensor", "force.x", &ft_states_[0]);
-  state_interfaces.emplace_back("tcp_fts_sensor", "force.y", &ft_states_[1]);
-  state_interfaces.emplace_back("tcp_fts_sensor", "force.z", &ft_states_[2]);
-  state_interfaces.emplace_back("tcp_fts_sensor", "torque.x", &ft_states_[3]);
-  state_interfaces.emplace_back("tcp_fts_sensor", "torque.y", &ft_states_[4]);
-  state_interfaces.emplace_back("tcp_fts_sensor", "torque.z", &ft_states_[5]);
+        int ind = 0;
+        for (const auto &joint_name: joint_interfaces["velocity"]) {
+            command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
+        }
 
-  return state_interfaces;
-}
+        return command_interfaces;
+    }
 
-std::vector<hardware_interface::CommandInterface> RobotSystem::export_command_interfaces()
-{
-  std::vector<hardware_interface::CommandInterface> command_interfaces;
+    return_type RobotSystem::read(const rclcpp::Time & /*time*/, const rclcpp::Duration &period) {
+        // TODO set sensor_states_ values from subscriber
 
-  int ind = 0;
-  for (const auto & joint_name : joint_interfaces["position"])
-  {
-    command_interfaces.emplace_back(joint_name, "position", &joint_position_command_[ind++]);
-  }
+        for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
+            joint_velocities_[i] = joint_velocities_command_[i];
+            joint_position_[i] += joint_velocities_command_[i] * period.seconds();
+        }
 
-  ind = 0;
-  for (const auto & joint_name : joint_interfaces["velocity"])
-  {
-    command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
-  }
+        return return_type::OK;
+    }
 
-  command_interfaces.emplace_back("tcp_fts_sensor", "force.x", &ft_command_[0]);
-  command_interfaces.emplace_back("tcp_fts_sensor", "force.y", &ft_command_[1]);
-  command_interfaces.emplace_back("tcp_fts_sensor", "force.z", &ft_command_[2]);
-  command_interfaces.emplace_back("tcp_fts_sensor", "torque.x", &ft_command_[3]);
-  command_interfaces.emplace_back("tcp_fts_sensor", "torque.y", &ft_command_[4]);
-  command_interfaces.emplace_back("tcp_fts_sensor", "torque.z", &ft_command_[5]);
+    return_type RobotSystem::write(const rclcpp::Time &, const rclcpp::Duration &) {
+        for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
+            joint_velocities_[i] = joint_velocities_command_[i];
+            // send vel
+        }
 
-  return command_interfaces;
-}
-
-return_type RobotSystem::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
-{
-  // TODO set sensor_states_ values from subscriber
-
-  for (auto i = 0ul; i < joint_velocities_command_.size(); i++)
-  {
-    joint_velocities_[i] = joint_velocities_command_[i];
-    joint_position_[i] += joint_velocities_command_[i] * period.seconds();
-  }
-
-  for (auto i = 0ul; i < joint_position_command_.size(); i++)
-  {
-    joint_position_[i] = joint_position_command_[i];
-  }
-
-  return return_type::OK;
-}
-
-return_type RobotSystem::write(const rclcpp::Time &, const rclcpp::Duration &)
-{
-  return return_type::OK;
-}
+        return return_type::OK;
+    }
 
 }  // namespace sawyer_robot_driver
 
