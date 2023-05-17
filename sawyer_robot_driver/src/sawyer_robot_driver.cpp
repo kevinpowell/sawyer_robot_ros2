@@ -152,7 +152,6 @@ namespace sawyer_robot_driver {
         cmd_msg.header.stamp = cmd_node_->now();
 
         cmd_publisher_->publish(cmd_msg);
-        cmd_publisher_->publish(cmd_msg);
 
         return return_type::OK;
     }

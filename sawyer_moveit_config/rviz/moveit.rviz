@@ -9,7 +9,7 @@ Panels:
         - /Image1
         - /RobotModel1
       Splitter Ratio: 0.4123287796974182
-    Tree Height: 641
+    Tree Height: 287
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -118,48 +118,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        right_connector_plate_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_connector_plate_mount:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        right_electric_gripper_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        right_gripper_l_finger:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_l_finger_tip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_r_finger:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_r_finger_tip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_tip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         right_hand:
           Alpha: 1
           Show Axes: false
@@ -254,7 +212,7 @@ Visualization Manager:
       MoveIt_Allow_Replanning: false
       MoveIt_Allow_Sensor_Positioning: false
       MoveIt_Planning_Attempts: 10
-      MoveIt_Planning_Time: 5
+      MoveIt_Planning_Time: 1
       MoveIt_Use_Cartesian_Path: false
       MoveIt_Use_Constraint_Aware_IK: false
       MoveIt_Workspace:
@@ -310,48 +268,6 @@ Visualization Manager:
             Show Trail: false
             Value: true
           right_arm_itb:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          right_connector_plate_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_connector_plate_mount:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          right_electric_gripper_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          right_gripper_l_finger:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_l_finger_tip:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_r_finger:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_r_finger_tip:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_tip:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -515,48 +431,6 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          right_connector_plate_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_connector_plate_mount:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          right_electric_gripper_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          right_gripper_l_finger:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_l_finger_tip:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_r_finger:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_r_finger_tip:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          right_gripper_tip:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           right_hand:
             Alpha: 1
             Show Axes: false
@@ -638,7 +512,7 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
-      Velocity_Scaling_Factor: 0.1
+      Velocity_Scaling_Factor: 0.4
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -685,39 +559,39 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.7734967470169067
+      Distance: 3.4431703090667725
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.1663440316915512
-        Y: 0.33434128761291504
-        Z: 0.1466866433620453
-      Focal Shape Fixed Size: true
+        X: 0.05612891912460327
+        Y: 0.14110830426216125
+        Z: 0.1984151303768158
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6453983187675476
+      Pitch: 0.18039895594120026
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.2154009342193604
+      Yaw: 1.700395941734314
     Saved: ~
 Window Geometry:
-  "":
-    collapsed: false
-  " - Trajectory Slider":
-    collapsed: false
   Displays:
     collapsed: false
-  Height: 1376
+  Height: 1022
   Hide Left Dock: false
   Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000002dc000004c7fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000339000000c900fffffffb0000000a0049006d006100670065000000037d000001870000002800fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffbffffffff010000037c000001880000017d00ffffff000000010000010f000004c7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000004c7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b2000000000000000000000002000009b600000134fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000009b600000039fc0100000002fb0000000800540069006d00650100000000000009b6000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000006d4000004c700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  MotionPlanning:
+    collapsed: false
+  MotionPlanning - Trajectory Slider:
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd0000000400000000000002dc00000365fc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000001d7000000c900fffffffb0000000a0049006d006100670065000000037d000001870000002800fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000021a000001880000017d00fffffffb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000000000010000010f000004c7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000004c7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b2000000000000000000000002000009b600000134fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000074800000039fc0100000002fb0000000800540069006d0065010000000000000748000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000004660000036500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -726,6 +600,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 2486
-  X: 74
+  Width: 1864
+  X: 664
   Y: 27
