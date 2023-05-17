@@ -40,3 +40,18 @@ joint_trajectory_controller:
         goal: 0.05
       right_j6:
         goal: 0.05
+    gains:
+      right_j0:
+        ff_velocity_scale: 1.0
+      right_j1:
+        ff_velocity_scale: 1.0
+      right_j2:
+        ff_velocity_scale: 1.0
+      right_j3:
+        ff_velocity_scale: 1.0
+      right_j4:
+        ff_velocity_scale: 1.0
+      right_j5:
+        ff_velocity_scale: 1.0
+      right_j6:
+        ff_velocity_scale: 1.0

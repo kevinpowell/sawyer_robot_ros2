@@ -53,14 +53,24 @@ def generate_launch_description():
                                    "config",
                                    "sawyer_parameters.yaml")
 
+    # Planning Configuration
+    ompl_planning_pipeline_config = {
+        "move_group": {
+            "planning_plugin": "ompl_interface/OMPLPlanner",
+            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "start_state_max_bounds_error": 0.1,
+        }
+    }
     move_group_node = Node(package='moveit_ros_move_group', executable='move_group',
                            output='screen',
                            parameters=[{'robot_description': robot_description_content},
                                        {'robot_description_semantic': robot_description_semantic_content},
-                                       {'moveit_controller_manager': 'moveit_ros_control_interface/Ros2ControlMultiManager'},
+                                       {
+                                           'moveit_controller_manager': 'moveit_ros_control_interface/Ros2ControlMultiManager'},
                                        {'moveit_manage_controllers': True},
                                        {'ros_control_namespace': '/'},
                                        {'planning_scene_monitor_options.joint_state_topic': 'robot/joint_states'},
+                                       ompl_planning_pipeline_config,
                                        kinematics_path,
                                        ],
                            )
@@ -100,7 +110,7 @@ def generate_launch_description():
     )
 
     nodes_to_start = [
-        control_node,
+        # control_node,
         robot_state_publisher_node,
         rviz_node,
         move_group_node,
