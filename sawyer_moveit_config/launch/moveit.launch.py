@@ -57,6 +57,10 @@ def generate_launch_description():
                            output='screen',
                            parameters=[{'robot_description': robot_description_content},
                                        {'robot_description_semantic': robot_description_semantic_content},
+                                       {'moveit_controller_manager': 'moveit_ros_control_interface/Ros2ControlMultiManager'},
+                                       {'moveit_manage_controllers': True},
+                                       {'ros_control_namespace': '/'},
+                                       {'planning_scene_monitor_options.joint_state_topic': 'robot/joint_states'},
                                        kinematics_path,
                                        ],
                            )
@@ -84,6 +88,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
+            {'robot_description': robot_description_content},
             initial_joint_controllers,
         ],
     )
