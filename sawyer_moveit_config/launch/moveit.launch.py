@@ -30,23 +30,9 @@ def generate_launch_description():
         parameters=[{'robot_description': robot_description_content}],
     )
 
-    # robot_description_semantic_content = Command(
-    #     [
-    #         PathJoinSubstitution([FindExecutable(name="xacro")]),
-    #         " ",
-    #         PathJoinSubstitution(
-    #             [
-    #                 FindPackageShare("sawyer_moveit_config"),
-    #                 "srdf",
-    #                 "full_sawyer.srdf.xacro",
-    #             ]
-    #         ),
-    #     ]
-    # )
-
-    PATH_TO_SRDF = os.path.join(get_package_share_directory('sawyer_moveit_config'), "srdf",
-                                "full_sawyer.srdf.xacro")
-    with open(PATH_TO_SRDF, 'r') as f:
+    srdf_path = os.path.join(get_package_share_directory('sawyer_moveit_config'), "srdf",
+                             "full_sawyer.srdf.xacro")
+    with open(srdf_path, 'r') as f:
         robot_description_semantic_content = f.read()
 
     kinematics_path = os.path.join(get_package_share_directory("sawyer_moveit_config"),
@@ -118,6 +104,3 @@ def generate_launch_description():
     ]
 
     return LaunchDescription(nodes_to_start)
-
-
-generate_launch_description()
