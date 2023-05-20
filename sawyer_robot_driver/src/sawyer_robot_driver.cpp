@@ -129,13 +129,7 @@ namespace sawyer_robot_driver {
     }
 
     return_type RobotSystem::read(const rclcpp::Time & /*time*/, const rclcpp::Duration &period) {
-        // TODO set sensor_states_ values from subscriber
         state_reader_node_->update_state(joint_position_, joint_velocities_, joint_efforts_);
-
-        for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
-            joint_velocities_[i] = joint_velocities_command_[i];
-            joint_position_[i] += joint_velocities_command_[i] * period.seconds();
-        }
 
         return return_type::OK;
     }
@@ -144,8 +138,8 @@ namespace sawyer_robot_driver {
         for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
             joint_velocities_[i] = joint_velocities_command_[i];
         }
+        
         intera_core_msgs::msg::JointCommand cmd_msg;
-
         cmd_msg.names = joint_names_;
         cmd_msg.velocity = joint_velocities_;
         cmd_msg.mode = intera_core_msgs::msg::JointCommand::VELOCITY_MODE;
