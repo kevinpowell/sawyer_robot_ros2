@@ -14,7 +14,7 @@ def generate_launch_description():
                 [
                     FindPackageShare("sawyer_description"),
                     "urdf",
-                    "full_sawyer.urdf.xacro",
+                    "mesh_full_sawyer.urdf.xacro",
                 ]
             ),
         ]

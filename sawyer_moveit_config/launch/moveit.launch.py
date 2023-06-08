@@ -9,19 +9,37 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("sawyer_description"),
-                    "urdf",
-                    "full_sawyer.urdf.xacro",
-                ]
-            ),
-        ]
-    )
+    real = False
+    if real:
+        robot_joint_states_topic = 'robot/joint_states'
+        robot_description_content = Command(
+            [
+                PathJoinSubstitution([FindExecutable(name="xacro")]),
+                " ",
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("sawyer_description"),
+                        "urdf",
+                        "full_sawyer.urdf.xacro",
+                    ]
+                ),
+            ]
+        )
+    else:
+        robot_joint_states_topic = 'joint_states'
+        robot_description_content = Command(
+            [
+                PathJoinSubstitution([FindExecutable(name="xacro")]),
+                " ",
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("sawyer_description"),
+                        "urdf",
+                        "sim_full_sawyer.urdf.xacro",
+                    ]
+                ),
+            ]
+        )
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -45,6 +63,7 @@ def generate_launch_description():
             "planning_plugin": "ompl_interface/OMPLPlanner",
             "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
+            "collision_detection": "neural",
         }
     }
     move_group_node = Node(package='moveit_ros_move_group', executable='move_group',
@@ -55,7 +74,7 @@ def generate_launch_description():
                                            'moveit_controller_manager': 'moveit_ros_control_interface/Ros2ControlMultiManager'},
                                        {'moveit_manage_controllers': True},
                                        {'ros_control_namespace': '/'},
-                                       {'planning_scene_monitor_options.joint_state_topic': 'robot/joint_states'},
+                                       {'planning_scene_monitor_options.joint_state_topic': robot_joint_states_topic},
                                        ompl_planning_pipeline_config,
                                        kinematics_path,
                                        ],
