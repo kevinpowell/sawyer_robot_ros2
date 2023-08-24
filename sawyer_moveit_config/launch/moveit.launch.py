@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    real = False
+    real = True
     if real:
         robot_joint_states_topic = 'robot/joint_states'
         robot_description_content = Command(
