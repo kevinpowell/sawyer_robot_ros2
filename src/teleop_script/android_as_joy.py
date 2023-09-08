@@ -21,7 +21,7 @@ class AndroidAsJoy:
     """
 
     def __init__(self, serverIP): 
-        websocket.enableTrace(True)
+        # websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp(f"ws://{serverIP}:8080",  on_message = self.ws_on_message,  on_error = self.ws_on_error, on_close = self.ws_on_close)
         self.ws.on_open = self.ws_on_open
 
@@ -52,6 +52,9 @@ class AndroidAsJoy:
         self.latest_msg=json.loads(message)
         type=self.latest_msg['type']
 
+        if type=='gyro':
+            print('gyro=', self.latest_msg)
+
         tmp={'id':self.msg_id, 'type':type, 'name':'', 'pressed':False, 'x':0.0, 'y':0.0, 'test':False}
         if 'button' in type:
             tmp['name']=self.latest_msg['data']
@@ -62,7 +65,7 @@ class AndroidAsJoy:
             tmp['test']=self.latest_msg['test']
         self.latest_data=tmp #update latest data to be processed by main thread
 
-        print('latest_data', self.latest_data)
+        # print('latest_data', self.latest_data)
 
 
 
@@ -83,7 +86,7 @@ def main():
     node = Node('AndroidAsJoy') 
     pub_joy = node.create_publisher(Joy, '/joy', 10)
     pub_gripper = node.create_publisher(Bool, '/gripper_command', 2)
-    freq=10.0
+    freq=5.0
 
     id_processed=0 #id of latest data processed
     gripper_toggle=False
@@ -101,8 +104,7 @@ def main():
 
         xyzvel = 0.4
 
-        #TODO: check how long time passed since last data arrived. if too long, reset button status, otherwise use latest data (for x,y,u,d)
-        #Trick to deal with continous button pressed but data comes discontinously.
+        
 
         if android.latest_data['id']>id_processed:  #new data arrived
             data=android.latest_data
@@ -110,10 +112,10 @@ def main():
             if 'gripper' in data['name']:
                 # print('------------gripper----------')
                 gripper_toggle = not gripper_toggle
-                msgB = Bool()
-                msgB.data = gripper_toggle
-                pub_gripper.publish(msgB)
-                continue
+                # msgB = Bool()
+                # msgB.data = gripper_toggle
+                # pub_gripper.publish(msgB)
+                # continue
             
             elif 'up' in data['name']:
                 cmd.axes[2] = xyzvel if data['pressed'] else 0.0
@@ -129,8 +131,35 @@ def main():
                 cmd.axes[1] = -xyzvel if data['pressed'] else 0.0
 
             if 'gyro' in data['type']:
-                cmd.axes[0] = android.latest_data['x']
-                cmd.axes[1] = android.latest_data['y']
+                gx=android.latest_data['x']
+                gy=android.latest_data['y']
+
+                cap=6.0
+                gx=min(max(gx, -cap), cap)
+                gy=min(max(gy, -cap), cap)
+
+                #map to -0.7~0.7
+                gx=gx/cap*0.3
+                gy=gy/cap*0.3
+
+                # print(f'gx={gx:.2f}, gy={gy:.2f}') 
+
+                # if gx>2.0:
+                #     cmd.axes[1] = -xyzvel
+                # elif gx<-2.0:
+                #     cmd.axes[1] = xyzvel
+
+                if abs(gx)<0.05:
+                    gx=0.0
+                if abs(gy)<0.05:
+                    gy=0.0
+
+
+                cmd.axes[0]=gy 
+                cmd.axes[1]=-gx
+
+                # cmd.axes[0] = android.latest_data['x']
+                # cmd.axes[1] = android.latest_data['y']
             else:
                 #its a button.
                 last_button_pressed=data['name'] if data['pressed'] else ''
@@ -140,6 +169,7 @@ def main():
             # print('no new data b=', last_button_pressed, dt)
             #for some button retain pressed information for some time
             #if time passed, consider it as released
+            #Trick to deal with continous button pressed but data comes discontinously.
             if last_button_pressed in ['up', 'down', 'Y+', 'Y-', 'X+', 'X-']:
                  
                 if dt>1.0:
@@ -150,15 +180,13 @@ def main():
                     #publish the prevous data.
                     cmd=last_cmd
                     cmd.header.stamp = rclpy.clock.Clock().now().to_msg()
-                    pass 
 
 
         cmd.buttons[0] = gripper_toggle
-
-        # msgB = Bool()
-        # msgB.data = gripper_toggle
-        # pub_gripper.publish(msgB)
-
+        msgB = Bool()
+        msgB.data = gripper_toggle
+        pub_gripper.publish(msgB)
+        
         pub_joy.publish(cmd)
         last_cmd = cmd 
         
