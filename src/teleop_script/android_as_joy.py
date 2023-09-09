@@ -43,7 +43,10 @@ class AndroidAsJoy:
         #after pressing any button
         # {"id":18343,"type":"common","button":"gripper","pressed":false,"x":0.06506230682134628,"y":0.031077276915311813,"enable_ctrl":false,"enable_gyro":false,"f":90}
 
-        self.latest_msg=json.loads(message)
+        data=json.loads(message)
+        if 'button' not in data.keys():
+            data['button']=''
+        self.latest_msg=data
 
     def ws_on_error(self, ws, error):
         print(error)
@@ -68,10 +71,7 @@ def main():
     freq=50.0
  
     gripper_toggle=False
-
-    last_button_pressed=''
-    last_button_arrival_time=0.0
-    last_cmd=Joy()
+    
 
     prev_gripper_pressed=False
     while True:
@@ -114,12 +114,7 @@ def main():
             gx=gx/cap*0.3
             gy=gy/cap*0.3
 
-            # print(f'gx={gx:.2f}, gy={gy:.2f}') 
-
-            # if gx>2.0:
-            #     cmd.axes[1] = -xyzvel
-            # elif gx<-2.0:
-            #     cmd.axes[1] = xyzvel
+            # print(f'gx={gx:.2f}, gy={gy:.2f}')  
 
             if abs(gx)<0.05:
                 gx=0.0
@@ -150,7 +145,7 @@ def main():
         pub_gripper.publish(msgB)
 
         pub_joy.publish(cmd)
-        last_cmd = cmd 
+         
         
 
 if __name__ == '__main__':
