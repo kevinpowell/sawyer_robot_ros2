@@ -7,11 +7,12 @@ from intera_core_msgs.msg import JointCommand
 from threading import Thread
 import time
 import numpy as np
-
+from std_msgs.msg import Bool
 
 class ROSInterface:
     def __init__(self, node, robot):
         self.joy_msg = None
+        self.android_msg=None
         self.joint_states_msg = None
         self.robot = robot
         self.node = node
@@ -19,6 +20,8 @@ class ROSInterface:
 
     def joy_callback(self, msg):
         self.joy_msg = msg
+    def android_callback(self, msg):
+        self.android_msg = msg
 
     def joint_states_callback(self, msg):
         self.joint_states_msg = msg
@@ -31,6 +34,7 @@ class ROSInterface:
     def spin_thread(self):
         self.node.create_subscription(JointState, 'robot/joint_states', self.joint_states_callback, 10)
         self.node.create_subscription(Joy, '/joy', self.joy_callback, 10)
+        self.node.create_subscription(Bool, '/android_command', self.android_callback, 10)
         rclpy.spin(self.node)
 
 
@@ -66,6 +70,18 @@ def run():
     gripper_msg.position = [0.0, 0.0]
     last_trigger = 0
     while rclpy.ok():
+
+        # print('---------------teleop----------------')
+        # if ros_interface.android_msg == None:
+        #     print('---anroid-is None------')
+        # else:
+        #     print('--------------anroidd=', ros_interface.android_msg.data)
+    
+        if not ros_interface.android_msg ==None:
+            # print('--------------anroidd=', ros_interface.android_msg.data)
+            if not ros_interface.android_msg.data: #don't publish 0 if android isn't enabled
+                continue
+        
         if ros_interface.joy_msg and ros_interface.joint_states_msg:
             print(ros_interface.joy_msg)
             m = ros_interface.joy_msg

@@ -61,19 +61,23 @@ class AndroidAsJoy:
 #TODO: publish both the gyro and button data in same msg
 
 def main():
-    android = AndroidAsJoy('192.168.1.41')
+    android = AndroidAsJoy('192.168.1.32')
 
 
     rclpy.init()
     node = Node('AndroidAsJoy') 
     pub_joy = node.create_publisher(Joy, '/joy', 10)
     pub_gripper = node.create_publisher(Bool, '/gripper_command', 2)
+    pub_android = node.create_publisher(Bool, '/android_command', 2)
+    pub_T = node.create_publisher(Bool, '/android_record', 2)
     freq=50.0
  
     gripper_toggle=False
     
 
     prev_gripper_pressed=False
+    enable_ctrl=False
+    last_t=False 
     while True:
         time.sleep(1/freq)
 
@@ -88,6 +92,7 @@ def main():
         # print('data=', data)
         if data==None:
             continue 
+        
 
         id=data['id']
         button=data['button']
@@ -97,7 +102,20 @@ def main():
         enable_ctrl=data['enable_ctrl']
         enable_gyro=data['enable_gyro']
 
+        if button=='T+' and pressed:
+            last_t=True
+        elif button=='T-' and pressed:
+            last_t=False
+        
+        msgT = Bool()
+        msgT.data = last_t
+        pub_T.publish(msgT) 
+
         if not enable_ctrl:
+            msgA = Bool()
+            msgA.data = enable_ctrl
+            pub_android.publish(msgA) 
+
             continue
 
 
@@ -145,6 +163,12 @@ def main():
         pub_gripper.publish(msgB)
 
         pub_joy.publish(cmd)
+
+
+        msgA = Bool()
+        msgA.data = enable_ctrl
+        pub_android.publish(msgA) 
+
          
         
 
