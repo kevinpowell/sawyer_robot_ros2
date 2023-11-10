@@ -13,7 +13,7 @@ try:
     import thread
 except ImportError:
     import _thread as thread
-
+import argparse
 
 class AndroidAsJoy:
     """
@@ -60,8 +60,9 @@ class AndroidAsJoy:
 #TODO: frequency settings in the android app.
 #TODO: publish both the gyro and button data in same msg
 
-def main():
-    android = AndroidAsJoy('192.168.1.32')
+def main(ip):
+    # ip='192.168.1.32'
+    android = AndroidAsJoy(ip)
 
 
     rclpy.init()
@@ -171,7 +172,10 @@ def main():
 
          
         
-
-if __name__ == '__main__':
-    main()
+if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ip", type=str, help="IP shown on android sixdof app")
+    args=parser.parse_args()
+    print('args=', args)
+    main(args.ip)
 

@@ -1,0 +1,9 @@
+# Ignore everything
+/*
+
+# Not these directories
+!src/
+
+# Not these files
+!.gitignore
+!readme2.md
