@@ -51,3 +51,6 @@ if __name__=='__main__':
     args=parser.parse_args()
     print('args=', args)
     main(args.src, args.savedir)
+
+# python3 demo2video.py -f /home/carl/data_sawyer/block/11_09_2023_21_23_131.pkl --savedir  /home/carl/data_sawyer/block_videos
+# python3 demo2video.py -f /home/carl/data_sawyer/block --savedir  /home/carl/data_sawyer/block_videos
