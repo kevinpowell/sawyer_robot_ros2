@@ -28,6 +28,9 @@ jointMap = {name: ind for ind, name in enumerate(robot.jointNames)}
 joint_names=['right_j0', 'right_j1', 'right_j2', 'right_j3', 'right_j4', 'right_j5', 'right_j6']
 joint_inds=[jointMap[name] for name in joint_names]
 
+
+#TODO: action normalization [-1,1]
+
 def get_ee(jointmsg):
     msg=jointmsg    
     q =  robot.getJoints() 
