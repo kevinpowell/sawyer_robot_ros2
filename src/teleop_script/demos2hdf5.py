@@ -57,7 +57,7 @@ def extract_data(msgs, imgs, grips):
     similar to matlab code, robot library (rl) is needed to convert msgs to end effector pose
     '''
     
-    poss, vels, ees, ts, imgs_wrist, imgs_front=[], [], [], [], [], []
+    poss, vels, ees,dees, ts, imgs_wrist, imgs_front=[], [], [], [], [], [],[]
 
     for i in range(len(msgs)-1):  #remove the last element, as ee is delta_ee
         msg=msgs[i]
@@ -73,7 +73,8 @@ def extract_data(msgs, imgs, grips):
 
         poss.append(pos)
         vels.append(vel)
-        ees.append(delta_ee)
+        ees.append(ee)         #current ee
+        dees.append(delta_ee)  #next_ee - current_ee
         ts.append(t)
 
         # to rgb
@@ -95,7 +96,7 @@ def extract_data(msgs, imgs, grips):
 
     grips =np.array(grips[:-1], dtype=np.int8)  
 
-    return poss, vels, ees, ts, imgs_wrist, imgs_front, grips
+    return poss, vels, ees,dees, ts, imgs_wrist, imgs_front, grips
 
 
 def load_demo_pkl(demo_name):
@@ -113,7 +114,7 @@ def save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, im
     with h5py.File(hdf5_file_name, 'a') as hf:
         group = hf.create_group(demo_group) 
         group.attrs['num_samples'] = poss.shape[0]
-        group.create_dataset('obs/robot0_eef_pos', data=ees)                        #TODO: set actual ee pos, not delta ee
+        group.create_dataset('obs/robot0_eef_pos', data=ees)      
         group.create_dataset('obs/robot0_eye_in_hand_image', data=imgs_wrist)
         group.create_dataset('obs/agentview_image', data=imgs_front)
         group.create_dataset('obs/robot0_joint_pos', data=poss)
@@ -135,8 +136,8 @@ def main(dir):
         # print(demo_name)
 
         msgs, imgs, grips = load_demo_pkl(demo_name)
-        poss, vels, ees, ts, imgs_wrist, imgs_front, grips = extract_data(msgs, imgs, grips)
-        robomimic_action=np.hstack([ees, grips.reshape(-1,1)])
+        poss, vels, ees, dees, ts, imgs_wrist, imgs_front, grips = extract_data(msgs, imgs, grips)
+        robomimic_action=np.hstack([dees, grips.reshape(-1,1)])
 
         save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, imgs_wrist, imgs_front, robomimic_action)
 
