@@ -110,7 +110,7 @@ def save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, im
     with h5py.File(hdf5_file_name, 'a') as hf:
         group = hf.create_group(demo_group) 
         group.attrs['num_samples'] = poss.shape[0]
-        group.create_dataset('obs/robot0_eef_pos', data=ees)
+        group.create_dataset('obs/robot0_eef_pos', data=ees)                        #TODO: set actual ee pos, not delta ee
         group.create_dataset('obs/robot0_eye_in_hand_image', data=imgs_wrist)
         group.create_dataset('obs/agentview_image', data=imgs_front)
         group.create_dataset('obs/robot0_joint_pos', data=poss)
