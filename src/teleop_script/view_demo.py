@@ -14,6 +14,7 @@ def main(path):
         demo = pkl.load(f)
     imgs=demo['imgs']
 
+    frequency = 20.0   # similar to robomimic
     for img in imgs:
         image_wrist, image_front=img
         image=np.concatenate([image_wrist, image_front], axis=1)
@@ -21,7 +22,7 @@ def main(path):
         if cv2.waitKey(1) == 27: 
             print('UI closed')
             break  # esc to quit
-        time.sleep(1/30)
+        time.sleep(1/frequency)
 
     cv2.destroyAllWindows() 
 
@@ -34,4 +35,6 @@ if __name__=='__main__':
     main(args.file)
 
 #  python3 view_demo.py -f /media/ns/DatasetDrive/data_sawyer/spoon/09_14_2023_22_33_0.04070901870727539_324.pkl
+
+# python3 view_demo.py -f /home/carl/data_sawyer/block2/11_13_2023_16_18_50.pkl
 

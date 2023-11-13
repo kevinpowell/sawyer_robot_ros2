@@ -63,3 +63,17 @@ rosrun intera_examples gripper_keyboard.py
 rosrun gripper gripper_listener.py
 
 ```
+
+
+### Run cameras
+
+Realsense install: https://github.com/IntelRealSense/realsense-ros
+usb_camera install: https://github.com/ros-drivers/usb_cam/tree/ros2
+
+```
+ros2 run usb_cam usb_cam_node_exe --ros-args --remap __ns:=/front_camera --params-file params_1.yaml
+
+ros2 launch realsense2_camera rs_launch.py camera_namespace:=robot1 camera_name:=D455_1 rgb_camera.profile:=640x480x30
+```
+
+

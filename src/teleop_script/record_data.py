@@ -11,49 +11,18 @@ import numpy as np
 from std_msgs.msg import Bool
 import rotm2euler
 
-from utils_camera import MyRealSense, CVCamera
 import cv2
 from matplotlib import pyplot as plt
 import pickle
 import datetime
 import os 
 import argparse
+from sensor_msgs.msg import Image
+
+from utils_ros import ROSInterface
 
 # v4l2-ctl --list-devices
-
-
-
-class ROSInterface:
-    def __init__(self, node, robot):
-        
-        self.robot = robot
-        self.node = node
-        self.jointMap = {name: ind for ind, name in enumerate(self.robot.jointNames)} 
-
-        self.latest_joint_states = None
-        self.latest_gripper_state=False
-        self.record_msg=None
-
-    def joint_states_callback(self, msg):
-        self.latest_joint_states = msg
-        q = self.robot.getJoints()
-        # print('joint_states:', q)
-        for ind, name in enumerate(msg.name):
-            if name in self.jointMap:
-                q[self.jointMap[name]] = msg.position[ind]
-        self.robot.setJoints(q)
-    
-    def gripper_callback(self, msg):
-        self.latest_gripper_state=msg.data
-    def android_callback(self, msg):
-        self.record_msg = msg
-
-    def spin_thread(self):
-        self.node.create_subscription(JointState, 'robot/joint_states', self.joint_states_callback, 10) 
-        self.node.create_subscription(Bool, '/gripper_command', self.gripper_callback, 10)
-        self.node.create_subscription(Bool, '/android_record', self.android_callback, 10)
-        rclpy.spin(self.node)
-
+ 
 
 
 def save_demo(savedir, msgs, imgs, grips, dt):
@@ -75,11 +44,8 @@ def save_demo(savedir, msgs, imgs, grips, dt):
         pickle.dump(tosave, f)
 
 
-def main(camera, savedir):
+def main(savedir):
     rclpy.init()
-
-    cam_wrist=MyRealSense()
-    cam_front=CVCamera(camera)
 
     urdf_path = os.getcwd() +'/'+'sawyer.urdf'  #'/home/carl/sawyer_robot_ros2/src/teleop_script/sawyer.urdf'
     robot = URDFModel(urdf_path)
@@ -108,10 +74,26 @@ def main(camera, savedir):
 
     started=False  #make sure gripper is closed before starting
 
+    frequency = 20.0   # similar to robomimic
+
     st=time.time()
     for i in range(1000000):
-        image_wrist=cam_wrist.get_current_frame(scale=0.5)  
-        image_front=cam_front.get_current_frame(scale=0.5) 
+        image_wrist=ros_interface.image_wrist
+        image_front=ros_interface.image_front
+
+        if image_front.sum()==0.0:
+            print('image front None')
+            continue
+        if image_wrist.sum()==0:
+            print('image wrist None')
+            continue
+
+        scale=0.5
+        image_wrist = cv2.resize(image_wrist, (int(image_wrist.shape[1]*scale), int(image_wrist.shape[0]*scale) ) , interpolation = cv2.INTER_AREA)
+        image_front = cv2.resize(image_front, (int(image_front.shape[1]*scale), int(image_front.shape[0]*scale) ) , interpolation = cv2.INTER_AREA)
+
+        # image_wrist=cam_wrist.get_current_frame(scale=0.5)  
+        # image_front=cam_front.get_current_frame(scale=0.5) 
         # print('shape: ', image_wrist.shape, image_front.shape)
         msg=ros_interface.latest_joint_states
         gripper_isopen=ros_interface.latest_gripper_state
@@ -150,6 +132,9 @@ def main(camera, savedir):
         if cv2.waitKey(1) == 27: 
             print('UI closed')
             break  # esc to quit
+
+        time.sleep(1.0/frequency)
+
     cv2.destroyAllWindows() 
 
 
@@ -157,22 +142,16 @@ def main(camera, savedir):
     dt=time.time()-st
     print( len(msgs), dt, len(msgs)/dt )
 
-    cam_front.close()
-    cam_wrist.close()
-
-
     save_demo(savedir, msgs, imgs, grips, dt) 
     print('done')
     rclpy.shutdown()
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-cid", "--camera", type=int, default=0,  help="USB camera id")
+    # parser.add_argument("-cid", "--camera", type=int, default=0,  help="USB camera id")
     parser.add_argument("-dir", "--savedir", type=str, default='/home/carl/data_sawyer/block/')
     args=parser.parse_args()
     print('args=', args)
-    main(args.camera, args.savedir)
+    main(args.savedir)
 
-
-#python3 record_data.py --camera 3
 
