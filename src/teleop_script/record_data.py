@@ -20,13 +20,15 @@ import argparse
 from sensor_msgs.msg import Image
 
 from utils_ros import ROSInterface
-
+import beepy as beep
+import threading
 # v4l2-ctl --list-devices
- 
+
+beep_start = lambda : beep.beep('coin')
+beep_end= lambda : beep.beep('ready')
 
 
 def save_demo(savedir, msgs, imgs, grips, dt):
-    #TODO: save every 5th frame?
     tosave={}
 
     tosave['msgs']=msgs
@@ -46,6 +48,9 @@ def save_demo(savedir, msgs, imgs, grips, dt):
 
 def main(savedir):
     rclpy.init()
+
+    if savedir[-1]!='/':
+        savedir+='/'
 
     urdf_path = os.getcwd() +'/'+'sawyer.urdf'  #'/home/carl/sawyer_robot_ros2/src/teleop_script/sawyer.urdf'
     robot = URDFModel(urdf_path)
@@ -107,12 +112,16 @@ def main(savedir):
             if not ros_interface.record_msg.data: 
                 if started:
                     print('recording stopped')
+                    tb=Thread(target=beep_end)
+                    tb.start()
                     break
                 else: 
                     print('recording not started')
-                    continue
+                    # continue
             elif not started:
                 print('started')
+                tb=Thread(target=beep_start)
+                tb.start()
                 started=True
                 st=time.time()
 
@@ -149,7 +158,8 @@ def main(savedir):
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     # parser.add_argument("-cid", "--camera", type=int, default=0,  help="USB camera id")
-    parser.add_argument("-dir", "--savedir", type=str, default='/home/carl/data_sawyer/block/')
+    # parser.add_argument("-dir", "--savedir", type=str, default='/home/carl/data_sawyer/block/')
+    parser.add_argument("-dir", "--savedir", type=str, required=True)
     args=parser.parse_args()
     print('args=', args)
     main(args.savedir)
