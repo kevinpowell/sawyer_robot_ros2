@@ -24,9 +24,14 @@ def main(path, savedir):
     print('paths: ', paths)
 
     for demo_name in paths:
-        with open(demo_name, 'rb') as f:
-            demo = pkl.load(f)
-        imgs=demo['imgs']
+        try:
+            with open(demo_name, 'rb') as f:
+                demo = pkl.load(f)
+            imgs=demo['imgs']
+        except Exception as e:
+            print(f'Error: {e}')
+            print(f'skip file: {demo_name}')
+            continue
 
         print('demo_name: ', demo_name)
         fn=demo_name.split('/')[-1].strip()
@@ -54,3 +59,4 @@ if __name__=='__main__':
 
 # python3 demo2video.py -f /home/carl/data_sawyer/block/11_09_2023_21_23_131.pkl --savedir  /home/carl/data_sawyer/block_videos
 # python3 demo2video.py -f /home/carl/data_sawyer/block --savedir  /home/carl/data_sawyer/block_videos
+# python3 demo2video.py -f /home/carl/data_sawyer/dclose --savedir  /home/carl/data_sawyer/videos_dclose

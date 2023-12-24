@@ -25,7 +25,8 @@ urdf_path = os.getcwd() +'/'+'sawyer.urdf'  #'/home/carl/sawyer_robot_ros2/src/t
 robot = URDFModel(urdf_path)
 jointMap = {name: ind for ind, name in enumerate(robot.jointNames)}
 
-joint_names=['right_j0', 'right_j1', 'right_j2', 'right_j3', 'right_j4', 'right_j5', 'right_j6']
+joint_names=['head_pan', 'right_j0', 'right_j1', 'right_j2', 'right_j3', 'right_j4', 'right_j5', 'right_j6']
+# joint_names=robot.jointNames
 joint_inds=[jointMap[name] for name in joint_names]
 
 
@@ -66,9 +67,11 @@ def extract_data(msgs, imgs, grips):
         ee=get_ee(msg)
         next_ee=get_ee(msgs[i+1])
         delta_ee=next_ee -ee
-
+        # print('test: ', len(msg.position))
         pos =[msg.position[ind] for ind in joint_inds] 
         vel =[msg.velocity[ind] for ind in joint_inds] 
+        # pos=msg.position
+        # vel=msg.velocity
         t=msg.header.stamp.sec+msg.header.stamp.nanosec*1e-9
 
         poss.append(pos)
@@ -129,7 +132,7 @@ def main(dir):
     files=glob.glob(dir+'*.pkl') 
     print('Total ', len(files))
 
-    hdf5_file_name=dir+'demos.hdf5'
+    hdf5_file_name=dir+'demos_10d.hdf5'
 
     for demo_no in tqdm.tqdm(range(len(files))): 
         demo_name=files[demo_no]
@@ -153,3 +156,5 @@ if __name__=='__main__':
     main(args.src)
 
 # python3 demos2hdf5.py -f /home/carl/data_sawyer/block
+# python3 demos2hdf5.py -f /home/carl/data_sawyer/dclose
+
