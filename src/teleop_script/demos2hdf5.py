@@ -146,8 +146,6 @@ def main(dir):
 
 
 
-
-
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--src", type=str, default=0,  help="src directory", required=True) 
@@ -155,6 +153,11 @@ if __name__=='__main__':
     print('args=', args)
     main(args.src)
 
+
+
 # python3 demos2hdf5.py -f /home/carl/data_sawyer/block
 # python3 demos2hdf5.py -f /home/carl/data_sawyer/dclose
+
+
+
 

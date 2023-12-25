@@ -23,6 +23,10 @@ def main(path, savedir):
 
     print('paths: ', paths)
 
+
+    if not os.path.exists(savedir):
+        os.makedirs(savedir)
+
     for demo_name in paths:
         try:
             with open(demo_name, 'rb') as f:

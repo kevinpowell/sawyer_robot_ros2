@@ -15,18 +15,22 @@ except ImportError:
     import _thread as thread
 import argparse
 
+#NOTE: sometimes network freezes, doesn't get any data from android.
+
+
 class AndroidAsJoy:
     """
     publish same command as physical joystick. (ATTACK 3 in our lab)
     """
 
-    def __init__(self, serverIP): 
+    def __init__(self, serverIP, debug=False): 
         # websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp(f"ws://{serverIP}:8080",  on_message = self.ws_on_message,  on_error = self.ws_on_error, on_close = self.ws_on_close)
         self.ws.on_open = self.ws_on_open
 
         self.latest_msg=None 
         self.time_last_ms = time.time_ns() // 1_000_000 
+        self.debug=debug
  
         thread.start_new_thread(self.run, ())
 
@@ -42,6 +46,9 @@ class AndroidAsJoy:
         # {"id":12435,"type":"common","pressed":false,"x":0.06475485861301422,"y":0.0334872305393219,"enable_ctrl":false,"enable_gyro":false,"f":90}
         #after pressing any button
         # {"id":18343,"type":"common","button":"gripper","pressed":false,"x":0.06506230682134628,"y":0.031077276915311813,"enable_ctrl":false,"enable_gyro":false,"f":90}
+
+        if self.debug:
+            print(message)
 
         data=json.loads(message)
         if 'button' not in data.keys():
@@ -60,9 +67,9 @@ class AndroidAsJoy:
 #TODO: frequency settings in the android app.
 #TODO: publish both the gyro and button data in same msg
 
-def main(ip):
+def main(ip, debug):
     # ip='192.168.1.32'
-    android = AndroidAsJoy(ip)
+    android = AndroidAsJoy(ip, debug=debug)
 
 
     rclpy.init()
@@ -174,8 +181,9 @@ def main(ip):
         
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", type=str, help="IP shown on android sixdof app")
+    parser.add_argument("-i", "--ip", type=str, help="IP shown on android sixdof app", required=True)
+    parser.add_argument('-debug', action='store_true')
     args=parser.parse_args()
     print('args=', args)
-    main(args.ip)
+    main(args.ip, args.debug)
 
