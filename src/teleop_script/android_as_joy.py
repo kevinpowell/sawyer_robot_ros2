@@ -119,6 +119,8 @@ def main(ip, debug):
         msgT.data = last_t
         pub_T.publish(msgT) 
 
+        
+
         if not enable_ctrl:
             msgA = Bool()
             msgA.data = enable_ctrl

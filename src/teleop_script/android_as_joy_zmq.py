@@ -238,9 +238,13 @@ def main(ip, debug):
                 # print('toggle')
             prev_gripper_pressed = pressed
 
+        recording= 'OFF' not in data['rec']
+        # print(f'button=', button, 'pressed=', pressed, 'record=', data['rec'], recording)
+
+        
 
         msgT = Bool()
-        msgT.data = last_t
+        msgT.data = recording
         pub_T.publish(msgT) 
 
 

@@ -64,3 +64,4 @@ if __name__=='__main__':
 # python3 demo2video.py -f /home/carl/data_sawyer/block/11_09_2023_21_23_131.pkl --savedir  /home/carl/data_sawyer/block_videos
 # python3 demo2video.py -f /home/carl/data_sawyer/block --savedir  /home/carl/data_sawyer/block_videos
 # python3 demo2video.py -f /home/carl/data_sawyer/dclose --savedir  /home/carl/data_sawyer/videos_dclose
+# python3 demo2video.py -f /home/carl/data_sawyer/spoon_jan18  --savedir /home/carl/data_sawyer/videos_spoon
