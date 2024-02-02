@@ -19,6 +19,49 @@ import os
 import argparse
 import glob 
 import tqdm
+# from robomimic.utils.file_utils import create_hdf5_filter_key
+
+def create_hdf5_filter_key(hdf5_path, demo_keys, key_name):
+    """
+    Creates a new hdf5 filter key in hdf5 file @hdf5_path with
+    name @key_name that corresponds to the demonstrations
+    @demo_keys. Filter keys are generally useful to create
+    named subsets of the demonstrations in an hdf5, making it
+    easy to train, test, or report statistics on a subset of
+    the trajectories in a file.
+
+    Returns the list of episode lengths that correspond to the filtering.
+
+    Args:
+        hdf5_path (str): path to hdf5 file
+        demo_keys ([str]): list of demonstration keys which should
+            correspond to this filter key. For example, ["demo_0", 
+            "demo_1"].
+        key_name (str): name of filter key to create
+
+    Returns:
+        ep_lengths ([int]): list of episode lengths that corresponds to
+            each demonstration in the new filter key
+    """
+    f = h5py.File(hdf5_path, "a")  
+    demos = sorted(list(f["data"].keys()))
+
+    # collect episode lengths for the keys of interest
+    ep_lengths = []
+    for ep in demos:
+        ep_data_grp = f["data/{}".format(ep)]
+        if ep in demo_keys:
+            ep_lengths.append(ep_data_grp.attrs["num_samples"])
+
+    # store list of filtered keys under mask group
+    k = "mask/{}".format(key_name)
+    if k in f:
+        del f[k]
+    f[k] = np.array(demo_keys, dtype='S8')
+
+    f.close()
+    return ep_lengths
+
 
 urdf_path = os.getcwd() +'/'+'sawyer.urdf'  #'/home/carl/sawyer_robot_ros2/src/teleop_script/sawyer.urdf'
 robot = URDFModel(urdf_path)
@@ -111,7 +154,8 @@ def load_demo_pkl(demo_name):
 
 def save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, imgs_wrist, imgs_front, actions):
 
-    demo_group=f"/data/demo_{demo_no}"
+    demo_name=f'demo_{demo_no}'
+    demo_group=f"/data/{demo_name}"
     print(f'saving demo {demo_group} to {hdf5_file_name}')
     with h5py.File(hdf5_file_name, 'a') as hf:
         group = hf.create_group(demo_group) 
@@ -123,25 +167,42 @@ def save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, im
         group.create_dataset('obs/robot0_joint_vel', data=vels)
         group.create_dataset('actions', data=actions)
         group.create_dataset('times', data=ts)
+    return demo_name
 
 
 def main(dir):
     if dir[-1]!='/':
         dir=dir+"/"
-    files=glob.glob(dir+'*.pkl') 
-    print('Total ', len(files))
+    # files=glob.glob(dir+'*.pkl')
+    groups=[f for f in glob.glob(dir+'*') if os.path.isdir(f) ]
+    print('Total groups', len(groups)) 
+    hdf5_file_name=dir+'demos_10d_group.hdf5'
 
-    hdf5_file_name=dir+'demos_10d.hdf5'
+    demo_no=1
+    for group in groups:
+        print('group', group)
+        files=glob.glob(group+'/*.pkl')
+        print('Total demos', len(files))
+        group_demos=[]
+        for demo_file in tqdm.tqdm(files):
+            msgs, imgs, grips = load_demo_pkl(demo_file)
+            poss, vels, ees, dees, ts, imgs_wrist, imgs_front, grips = extract_data(msgs, imgs, grips)
+            robomimic_action=np.hstack([dees, grips.reshape(-1,1)])
+            
 
-    for demo_no in tqdm.tqdm(range(len(files))): 
-        demo_name=files[demo_no]
-        # print(demo_name)
+            demo_name=save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, imgs_wrist, imgs_front, robomimic_action)
+            group_demos.append(demo_name)
+            demo_no+=1
+        
+        #save group
+        group_demos = np.array(group_demos, dtype='S8') 
+        hdf5_path=hdf5_file_name
 
-        msgs, imgs, grips = load_demo_pkl(demo_name)
-        poss, vels, ees, dees, ts, imgs_wrist, imgs_front, grips = extract_data(msgs, imgs, grips)
-        robomimic_action=np.hstack([dees, grips.reshape(-1,1)])
+        filter_keys=sorted([elem for elem in group_demos])
+        filter_name=os.path.basename(group)
+        filter_lengths = create_hdf5_filter_key(hdf5_path=hdf5_path, demo_keys=filter_keys, key_name=filter_name)
 
-        save_to_robomimic_like_hdf5(hdf5_file_name, demo_no, poss, vels, ees, ts, imgs_wrist, imgs_front, robomimic_action)
+        print('\n\n: ', filter_name,  filter_lengths)
 
 
 
@@ -154,9 +215,4 @@ if __name__=='__main__':
 
 
 
-# python3 demos2hdf5.py -f /home/carl/data_sawyer/block
-# python3 demos2hdf5.py -f /home/carl/data_sawyer/dclose
-# python3 demos2hdf5.py -f /home/carl/data_sawyer/spoon_hang
-
-
-
+# python3 demosgroup2hdf5.py -f /home/carl/data_sawyer/spoon_hang

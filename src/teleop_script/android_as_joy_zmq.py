@@ -205,15 +205,17 @@ def main(ip, debug):
         
 
         # id=data['id']
+        mode=data['mode']
         button=data['button']
         pressed=data['pressed']
         gx=data['x']
         gy=data['y']
         enable_ctrl=data['ctrl']
         enable_gyro=data['gyro']
+        recording=  data['rec']
 
         is_spinner_mode=False
-        if 'spinner_angle' in data:
+        if mode=='spinner':
             is_spinner_mode=True
             spinner_angle = data['spinner_angle']
             spinner_strength = data['spinner_strength']
@@ -221,26 +223,25 @@ def main(ip, debug):
             spinner_dy = 50 - data['spinner_y']
             xd= np.cos(np.deg2rad(spinner_angle))
             yd= np.sin(np.deg2rad(spinner_angle))
-            
              
-            if gripper_pressed and not data['gripper']:
-                gripper_toggle = not gripper_toggle
-                gripper_pressed = False
-            elif not gripper_pressed and data['gripper']:
-                gripper_pressed = True
-                gripper_toggle = not gripper_toggle
-
             # print('grasp=', grasp, data['gripper']) 
 
         else:
-            if not prev_gripper_pressed and button=='gripper' and pressed:
-                gripper_toggle = not gripper_toggle
-                # print('toggle')
-            prev_gripper_pressed = pressed
+            pass 
+            # if not prev_gripper_pressed and button=='gripper' and pressed:
+            #     gripper_toggle = not gripper_toggle
+            #     # print('toggle')
+            # prev_gripper_pressed = pressed
 
-        recording= 'OFF' not in data['rec']
+        
         # print(f'button=', button, 'pressed=', pressed, 'record=', data['rec'], recording)
 
+        if gripper_pressed and not data['gripper']:
+            gripper_toggle = not gripper_toggle
+            gripper_pressed = False
+        elif not gripper_pressed and data['gripper']:
+            gripper_pressed = True
+            gripper_toggle = not gripper_toggle
         
 
         msgT = Bool()

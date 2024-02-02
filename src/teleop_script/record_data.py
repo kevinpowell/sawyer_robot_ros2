@@ -165,4 +165,6 @@ if __name__=='__main__':
     main(args.savedir)
 
 
-# python record_data.py --savedir /home/carl/data_sawyer/spoon_jan18
+# python3 record_data.py --savedir /home/carl/data_sawyer/spoon_jan18
+# python3 record_data.py --savedir /home/carl/data_sawyer/spoon_hang
+    
