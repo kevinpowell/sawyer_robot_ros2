@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="https://ros.org/wiki/xacro" name="dental_drill">
+  <xacro:macro name="dental_drill" params="prefix connected_to">
+    <link name="${prefix}dental_drill_joint" type="fixed">
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="0.0001"/>
+        <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+      </inertial>
+    </link>
+    <link name="${prefix}_dental_drill">
+      <visual>
+        <geometry>
+          <mesh filename="package://intera_tools_description/meshes/dental_drill/boring_handpiece_wSawyerMount_MeterUnits.stl"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://intera_tools_description/meshes/dental_drill/boring_handpiece_wSawyerMount_MeterUnits.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+        <mass value="0.021"/>
+        <inertia ixx="0.055051" ixy="0.0" ixz="-0.0" iyy="0.05081" iyz="0.010497" izz="0.011345"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_gripper_base" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${prefix}_hand"/>
+      <child link="${prefix}_gripper_base"/>
+    </joint>
+    <joint name="${prefix}_endpoint" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${prefix}_gripper_base"/>
+      <child link="${prefix}_gripper"/>
+    </joint>
+    <joint name="${prefix}tip_frame" type="fixed">
+      <origin rpy="0 0 0" xyz="0 -0.01744 0.149"/>
+      <parent link="${prefix}_gripper_base"/>
+      <child link="${prefix}_dental_drill"/>
+    </joint>
+
+  </xacro:macro>
+</robot>
