@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="https://ros.org/wiki/xacro" name="dental_drill">
-  <xacro:macro name="dental_drill" params="prefix connected_to">
+  <xacro:macro name="dental_drill" params="prefix">
     <link name="${prefix}dental_drill_joint" type="fixed">
       <inertial>
         <origin rpy="0 0 0" xyz="0 0 0"/>
