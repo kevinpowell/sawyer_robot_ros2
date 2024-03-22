@@ -14,7 +14,7 @@ def generate_launch_description():
                 [
                     FindPackageShare("sawyer_description"),
                     "urdf",
-                    "mesh_full_sawyer.urdf.xacro",
+                    "sawyer_robot_test.urdf",
                 ]
             ),
         ]
@@ -25,16 +25,18 @@ def generate_launch_description():
         [FindPackageShare("sawyer_description"), "rviz", "view_robot.rviz"]
     )
 
-    # joint_state_publisher_node = Node(
-    #     package="joint_state_publisher",
-    #     executable="joint_state_publisher",
-    # )
+    joint_state_publisher_node = Node(
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        name="joint_state_publisher",
+    )
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
+        # arguments=["--ros-args", '--log-level', 'DEBUG'],
     )
     rviz_node = Node(
         package="rviz2",
@@ -45,7 +47,7 @@ def generate_launch_description():
     )
     #
     nodes_to_start = [
-        # joint_state_publisher_node,
+        joint_state_publisher_node,
         robot_state_publisher_node,
         rviz_node,
     ]
