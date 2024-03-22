@@ -2,6 +2,12 @@
 <robot xmlns:xacro="https://ros.org/wiki/xacro" name="dental_drill">
   <xacro:macro name="dental_drill" params="prefix">
     <link name="${prefix}_dental_drill_tip" type="fixed">
+      <visual>
+        <origin rpy="${pi/2} 0 0" xyz="0 0.00372 0"/>
+        <geometry>
+          <cylinder length="0.00744" radius="0.001"/>
+        </geometry>
+      </visual>
       <inertial>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <mass value="0.0001"/>
@@ -26,7 +32,7 @@
       </inertial>
     </link>
     <joint name="${prefix}_endpoint" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 -0.028 0"/>
       <parent link="${prefix}_hand"/>
       <child link="${prefix}_dental_drill"/>
     </joint>
