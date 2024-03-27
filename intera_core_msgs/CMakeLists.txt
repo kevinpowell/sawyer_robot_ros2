@@ -5,8 +5,6 @@ project(intera_core_msgs)
 find_package(ament_cmake REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 set(msg_files
@@ -26,8 +24,8 @@ set(msg_files
 #    msg/EndpointStates.msg
 #    msg/HeadPanCommand.msg
 #    msg/HeadState.msg
-#    msg/HomingCommand.msg
-#    msg/HomingState.msg
+    msg/HomingCommand.msg
+    msg/HomingState.msg
 #    msg/InteractionControlCommand.msg
 #    msg/InteractionControlState.msg
 #    msg/IOComponentCommand.msg
@@ -53,7 +51,6 @@ rosidl_generate_interfaces(intera_core_msgs
     action_msgs
     std_msgs
     builtin_interfaces
-    geometry_msgs
     )
 
 ament_export_dependencies(rosidl_default_runtime)
