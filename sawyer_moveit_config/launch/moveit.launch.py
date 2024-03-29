@@ -1,6 +1,8 @@
 import os
 
 from launch import LaunchDescription
+from launch.actions.declare_launch_argument import DeclareLaunchArgument
+from launch.actions.execute_local import LaunchConfiguration
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -9,8 +11,9 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    real = True
-    if real:
+    real = LaunchConfiguration('real_bot')
+    real_bot_larg = DeclareLaunchArgument('real_bot', default_value='True')
+    if real=='True': #note gumpy string compare
         robot_joint_states_topic = 'robot/joint_states'
         robot_description_content = Command(
             [
@@ -115,6 +118,7 @@ def generate_launch_description():
     )
 
     nodes_to_start = [
+        real_bot_larg,
         control_node,
         robot_state_publisher_node,
         rviz_node,

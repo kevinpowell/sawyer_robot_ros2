@@ -40,8 +40,7 @@ namespace sim_sawyer_robot_driver {
 
         terminate_thread_ = false;
         cmd_node_ = std::make_shared<rclcpp::Node>("cmd_node");
-        cmd_publisher_ = rclcpp::create_publisher<sensor_msgs::msg::JointState>(cmd_node_, "joint_states",
-                                                                                       10);
+        cmd_publisher_ = rclcpp::create_publisher<sensor_msgs::msg::JointState>(cmd_node_, "joint_states", 10);
 
         return CallbackReturn::SUCCESS;
     }
