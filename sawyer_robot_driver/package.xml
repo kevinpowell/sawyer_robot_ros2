@@ -12,11 +12,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>pluginlib</depend>
-  <depend>rclcpp</depend>
-  <depend>rclcpp_lifecycle</depend>
-  <depend>ros2_control</depend>
-  <depend>ros2_controllers</depend>
 
   <exec_depend>intera_core_msgs</exec_depend>
 

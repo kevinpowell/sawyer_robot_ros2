@@ -3,6 +3,7 @@ import os
 from launch import LaunchDescription
 from launch.actions.declare_launch_argument import DeclareLaunchArgument
 from launch.actions.execute_local import LaunchConfiguration
+from launch.actions import ExecuteProcess, SetEnvironmentVariable
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -117,13 +118,28 @@ def generate_launch_description():
         arguments=["joint_trajectory_controller", "-c", "/controller_manager", "--stopped"],
     )
 
+    gazebo_env = SetEnvironmentVariable("GAZEBO_MODEL_PATH", PathJoinSubstitution([FindPackageShare("sawyer_description"), "meshes"]))
+
+    gaz_proc = ExecuteProcess(cmd = ['gazebo','--verbose','-s','libgazebo_ros_init.so','-s','libgazebo_ros_factory.so' ], output='screen')
+
+    spawnEntity = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=['-topic', 'robot_description', '-entity', 'sawyer', "-x", "0.0", "-y", "0.0", "-z", "0.0"],
+        output='screen',
+        emulate_tty=True,
+    )
+
     nodes_to_start = [
         real_bot_larg,
         control_node,
         robot_state_publisher_node,
         rviz_node,
         move_group_node,
-        joint_trajectory_controller_spawner
+        joint_trajectory_controller_spawner,
+        gazebo_env,
+        gaz_proc,
+        spawnEntity
     ]
 
     return LaunchDescription(nodes_to_start)

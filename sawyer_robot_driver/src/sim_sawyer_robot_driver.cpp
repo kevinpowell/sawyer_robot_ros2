@@ -6,6 +6,7 @@
 #include <vector>
 #include <rclcpp/executors.hpp>
 
+#define START_IND 0
 namespace sim_sawyer_robot_driver {
 
     CallbackReturn RobotSystem::on_init(const hardware_interface::HardwareInfo &info) {
@@ -17,20 +18,18 @@ namespace sim_sawyer_robot_driver {
         sensor_msgs::msg::JointState state_msg;
 
 
-        // robot has 7 joints and 2 interfaces
-        joint_position_.assign(10, 0);
-        joint_velocities_.assign(10, 0);
-        joint_efforts_.assign(10, 0);
-        joint_names_.assign(10, "");
-        joint_names_[0] = "head_pan";
-        joint_names_[1] = "right_gripper_r_finger_joint";
-        joint_names_[2] = "right_gripper_r_finger_joint";
+        // robot has 7 arm joints + head_pan and 2 interfaces
+        joint_position_.assign(8, 0);
+        joint_velocities_.assign(8, 0);
+        joint_efforts_.assign(8, 0);
+        joint_names_.assign(8, "");
+        //joint_names_[0] = "head_pan";
 
 
         // only offer velocity control
-        joint_velocities_command_.assign(10, 0);
+        joint_velocities_command_.assign(8, 0);
 
-        int ind = 3;
+        int ind = START_IND;
         for (const auto &joint: info_.joints) {
             joint_names_[ind++] = joint.name;
             for (const auto &interface: joint.state_interfaces) {
@@ -48,17 +47,17 @@ namespace sim_sawyer_robot_driver {
     std::vector<hardware_interface::StateInterface> RobotSystem::export_state_interfaces() {
         std::vector<hardware_interface::StateInterface> state_interfaces;
 
-        int ind = 3;
+        int ind = START_IND;
         for (const auto &joint_name: joint_interfaces["velocity"]) {
             state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
         }
-        ind = 3;
+        ind = 1;
         for (const auto &joint_name: joint_interfaces["position"]) {
-            state_interfaces.emplace_back(joint_name, "position", &joint_velocities_[ind++]);
+            state_interfaces.emplace_back(joint_name, "position", &joint_position_[ind++]);
         }
-        ind = 3;
+        ind = 1;
         for (const auto &joint_name: joint_interfaces["effort"]) {
-            state_interfaces.emplace_back(joint_name, "effort", &joint_velocities_[ind++]);
+            state_interfaces.emplace_back(joint_name, "effort", &joint_efforts_[ind++]);
         }
 
         return state_interfaces;
@@ -67,7 +66,7 @@ namespace sim_sawyer_robot_driver {
     std::vector<hardware_interface::CommandInterface> RobotSystem::export_command_interfaces() {
         std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-        int ind = 3;
+        int ind = START_IND;
         for (const auto &joint_name: joint_interfaces["velocity"]) {
             command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
         }
@@ -88,7 +87,7 @@ namespace sim_sawyer_robot_driver {
         for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
             joint_velocities_[i] = joint_velocities_command_[i];
         }
-        
+
         sensor_msgs::msg::JointState msg;
         msg.name = joint_names_;
         msg.velocity = joint_velocities_;
