@@ -1,5 +1,5 @@
-Header               header
-geometry_msgs/Pose   pose
-geometry_msgs/Twist  twist
+std_msgs/Header header
+geometry_msgs/Pose pose
+geometry_msgs/Twist twist
 geometry_msgs/Wrench wrench
-bool                 valid
+bool valid

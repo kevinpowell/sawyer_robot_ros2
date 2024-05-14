@@ -11,7 +11,7 @@ set(msg_files
 #    msg/AnalogIOState.msg
 #    msg/AnalogIOStates.msg
 #    msg/AnalogOutputCommand.msg
-#    msg/RobotAssemblyState.msg
+    msg/RobotAssemblyState.msg
 #    msg/CameraControl.msg
 #    msg/CameraSettings.msg
 #    msg/CollisionAvoidanceState.msg
@@ -24,8 +24,8 @@ set(msg_files
 #    msg/EndpointStates.msg
 #    msg/HeadPanCommand.msg
 #    msg/HeadState.msg
-#    msg/HomingCommand.msg
-#    msg/HomingState.msg
+    msg/HomingCommand.msg
+    msg/HomingState.msg
 #    msg/InteractionControlCommand.msg
 #    msg/InteractionControlState.msg
 #    msg/IOComponentCommand.msg
