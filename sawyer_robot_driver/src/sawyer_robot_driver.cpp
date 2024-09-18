@@ -82,8 +82,7 @@ namespace sawyer_robot_driver {
         terminate_thread_ = false;
         state_reader_node_ = std::make_shared<MinimalSubscriber>(joint_interfaces);
         cmd_node_ = std::make_shared<rclcpp::Node>("cmd_node");
-        cmd_publisher_ = rclcpp::create_publisher<intera_core_msgs::msg::JointCommand>(cmd_node_, "/robot/limb/right/joint_command",
-                                                                                       10);
+        cmd_publisher_ = rclcpp::create_publisher<intera_core_msgs::msg::JointCommand>(cmd_node_, "/robot/limb/right/joint_command", 10);
         state_reader_thread_ = std::make_shared<std::thread>([this]() {
             bool terminate = terminate_thread_;
             while (!terminate_thread_) {
@@ -138,7 +137,7 @@ namespace sawyer_robot_driver {
         for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
             joint_velocities_[i] = joint_velocities_command_[i];
         }
-        
+
         intera_core_msgs::msg::JointCommand cmd_msg;
         cmd_msg.names = joint_names_;
         cmd_msg.velocity = joint_velocities_;
