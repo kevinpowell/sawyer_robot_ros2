@@ -12,8 +12,7 @@ namespace sawyer_robot_driver {
 
     MinimalSubscriber::MinimalSubscriber(std::unordered_map<std::string, std::vector<std::string>> joint_interfaces)
             : Node("minimal_subscriber") {
-        subscription_ = this->create_subscription<sensor_msgs::msg::JointState>(
-                "robot/joint_states", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+        subscription_ = this->create_subscription<sensor_msgs::msg::JointState>("robot/joint_states", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
 
         int ind = 0;
         for (const auto &joint: joint_interfaces["position"]) {
@@ -67,9 +66,10 @@ namespace sawyer_robot_driver {
         joint_efforts_.assign(7, 0);
         joint_names_.assign(7, "");
 
-        // only offer velocity control
+        // offer position and velocity control
         joint_velocities_command_.assign(7, 0);
-
+        joint_positions_command_.assign(7,0);
+        last_jpc_.assign(7,0);
 
         int ind = 0;
         for (const auto &joint: info_.joints) {
@@ -106,11 +106,11 @@ namespace sawyer_robot_driver {
         }
         ind = 0;
         for (const auto &joint_name: joint_interfaces["position"]) {
-            state_interfaces.emplace_back(joint_name, "position", &joint_velocities_[ind++]);
+            state_interfaces.emplace_back(joint_name, "position", &joint_position_[ind++]);
         }
         ind = 0;
         for (const auto &joint_name: joint_interfaces["effort"]) {
-            state_interfaces.emplace_back(joint_name, "effort", &joint_velocities_[ind++]);
+            state_interfaces.emplace_back(joint_name, "effort", &joint_efforts_[ind++]);
         }
 
         return state_interfaces;
@@ -124,6 +124,10 @@ namespace sawyer_robot_driver {
             command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
         }
 
+        ind = 0;
+        for (const auto &joint_name: joint_interfaces["position"]) {
+            command_interfaces.emplace_back(joint_name, "position", &joint_positions_command_[ind++]);
+        }
         return command_interfaces;
     }
 
@@ -134,17 +138,26 @@ namespace sawyer_robot_driver {
     }
 
     return_type RobotSystem::write(const rclcpp::Time &, const rclcpp::Duration &) {
-        for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
-            joint_velocities_[i] = joint_velocities_command_[i];
-        }
+        //for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
+        //    joint_velocities_[i] = joint_velocities_command_[i];
+        //}
 
         intera_core_msgs::msg::JointCommand cmd_msg;
+        bool send = true;
         cmd_msg.names = joint_names_;
-        cmd_msg.velocity = joint_velocities_;
-        cmd_msg.mode = intera_core_msgs::msg::JointCommand::VELOCITY_MODE;
         cmd_msg.header.stamp = cmd_node_->now();
+        if(std::any_of(joint_velocities_command_.begin(), joint_velocities_command_.end(), [](auto n){return n != 0;})) {
+          cmd_msg.mode = intera_core_msgs::msg::JointCommand::VELOCITY_MODE;
+          cmd_msg.velocity = joint_velocities_command_;
+        } else if (!std::equal(joint_positions_command_.begin(), joint_positions_command_.end(), last_jpc_.begin())) {
+          cmd_msg.mode = intera_core_msgs::msg::JointCommand::POSITION_MODE;
+          cmd_msg.position = joint_positions_command_;
+          last_jpc_ = joint_positions_command_;
+        } else {
+          send = false;
+        }
 
-        cmd_publisher_->publish(cmd_msg);
+        if(send) cmd_publisher_->publish(cmd_msg);
 
         return return_type::OK;
     }

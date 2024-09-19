@@ -2,6 +2,7 @@
 #include "intera_core_msgs/msg/joint_command.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 
+#include <cmath>
 #include <string>
 #include <vector>
 #include <rclcpp/executors.hpp>
@@ -26,8 +27,11 @@ namespace sim_sawyer_robot_driver {
         //joint_names_[0] = "head_pan";
 
 
-        // only offer velocity control
+        // offer position and velocity control
         joint_velocities_command_.assign(8, 0);
+        joint_positions_command_.assign(8,0);
+        last_jpc_.assign(8,0);
+        delta_j_.assign(8,0);
 
         int ind = START_IND;
         for (const auto &joint: info_.joints) {
@@ -51,11 +55,11 @@ namespace sim_sawyer_robot_driver {
         for (const auto &joint_name: joint_interfaces["velocity"]) {
             state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
         }
-        ind = 1;
+        ind = START_IND;(5/16"!), whi
         for (const auto &joint_name: joint_interfaces["position"]) {
             state_interfaces.emplace_back(joint_name, "position", &joint_position_[ind++]);
         }
-        ind = 1;
+        ind = START_IND;
         for (const auto &joint_name: joint_interfaces["effort"]) {
             state_interfaces.emplace_back(joint_name, "effort", &joint_efforts_[ind++]);
         }
@@ -71,6 +75,11 @@ namespace sim_sawyer_robot_driver {
             command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
         }
 
+        ind = START_IND;
+        for (const auto &joint_name: joint_interfaces["position"]) {
+            command_interfaces.emplace_back(joint_name, "position", &joint_positions_command_[ind++]);
+        }
+
         return command_interfaces;
     }
 
@@ -80,12 +89,33 @@ namespace sim_sawyer_robot_driver {
             joint_position_[i] += joint_velocities_command_[i] * period.seconds();
         }
 
+        if(std::any_of(delta_j_.begin(), delta_j_.end(), [](auto n){return n != 0.0;})) {
+           for(int i=0; i < std::size(delta_j_); i++) {
+             auto incr = std::copysign(period.seconds() * 1.0, delta_j_[i]);  //1 rad/sec constant joint vel in position mode
+             if(incr > 0.0)
+               incr = std::min(incr, delta_j_[i]);
+             else
+               incr = std::max(incr, delta_j_[i]);
+             joint_position_[i] += incr;
+             delta_j_[i] -= incr;
+             if(incr > 0.0)
+                delta_j_[i] = std::max(delta_j_[i], 0.0);
+             else
+                delta_j_[i] = std::min(delta_j_[i], 0.0);
+           }
+        }
         return return_type::OK;
     }
 
     return_type RobotSystem::write(const rclcpp::Time &, const rclcpp::Duration &) {
         for (auto i = 0ul; i < joint_velocities_command_.size(); i++) {
             joint_velocities_[i] = joint_velocities_command_[i];
+        }
+
+        if(!std::equal(joint_positions_command_.begin(), joint_positions_command_.end(), last_jpc_.begin())) {
+          std::copy(joint_positions_command_.begin(), joint_positions_command_.end(), last_jpc_.begin());
+          for(int i=0; i < std::size(last_jpc_); i++)
+             delta_j_[i] = last_jpc_[i] - joint_position_[i];
         }
 
         sensor_msgs::msg::JointState msg;

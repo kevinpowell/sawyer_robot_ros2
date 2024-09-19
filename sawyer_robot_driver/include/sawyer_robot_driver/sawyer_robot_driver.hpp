@@ -67,6 +67,8 @@ namespace sawyer_robot_driver {
     protected:
         /// The size of this vector is (standard_interfaces_.size() x nr_joints)
         std::vector<double> joint_velocities_command_;
+        std::vector<double> joint_positions_command_;
+        std::vector<double> last_jpc_;
         std::vector<double> joint_position_;
         std::vector<double> joint_velocities_;
         std::vector<double> joint_efforts_;
