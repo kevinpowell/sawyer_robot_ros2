@@ -55,7 +55,7 @@ namespace sim_sawyer_robot_driver {
         for (const auto &joint_name: joint_interfaces["velocity"]) {
             state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
         }
-        ind = START_IND;(5/16"!), whi
+        ind = START_IND;
         for (const auto &joint_name: joint_interfaces["position"]) {
             state_interfaces.emplace_back(joint_name, "position", &joint_position_[ind++]);
         }
