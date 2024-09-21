@@ -29,22 +29,13 @@ namespace sawyer_robot_driver {
 
     void MinimalSubscriber::topic_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
         mutex_.lock();
-        std::vector<double> vels;
-        for(auto v = 0; v < msg->name.size(); v++) {
-            std::string n(msg->name[v]);
-            if (ind_map_.find(n) != ind_map_.end()) {
-                vels.push_back(msg->velocity[v]);
-            }
-        }
-
-        bool dumb_sawyer = std::all_of(vels.begin(), vels.end(), [](double val){return val == -0.001;});
 
         for (auto i = 0; i < msg->name.size(); i++) {
             std::string name(msg->name[i]);
             if (ind_map_.find(name) != ind_map_.end()) {
                 int ind = ind_map_[name];
                 joint_position_[ind] = msg->position[i];
-                joint_velocities_[ind] = dumb_sawyer ? 0.0 : msg->velocity[i];
+                joint_velocities_[ind] = std::fabs(msg->velocity[i]) < 0.001001 ? 0 : msg->velocity[i]; //sawyer velocity deadband appears to be +/- 0.001;clamp to 0 here to prevent knock-on effects
                 joint_efforts_[ind] = msg->effort[i];
             }
         }
