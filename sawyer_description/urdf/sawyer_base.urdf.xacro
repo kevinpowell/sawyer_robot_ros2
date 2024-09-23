@@ -146,7 +146,7 @@
     </collision>
   </link>
   <joint name="right_j0" type="revolute">
-    <origin rpy="0 0 0" xyz="0 0 0.08"/>
+    <origin rpy="-0.0001523544 0.0008183138 -0.0003147602" xyz="0.0005568102 -2.7503e-05 0.0797797795"/>
     <parent link="right_arm_base_link"/>
     <child link="right_l0"/>
     <axis xyz="0 0 1"/>
@@ -176,7 +176,7 @@
     </collision>
   </link>
   <joint name="head_pan" type="revolute">
-    <origin rpy="0 0 0" xyz="0 0 0.2965"/>
+    <origin rpy="-0.00061707143079 -0.00046281620664 0.0832701592425" xyz="-7.94922320844e-05 -0.000150449608932 0.2965"/>
     <parent link="right_l0"/>
     <child link="head"/>
     <axis xyz="0 0 1"/>
@@ -221,7 +221,7 @@
     </collision>
   </link>
   <joint name="right_j1" type="revolute">
-    <origin rpy="-1.57079632679 1.57079632679 0" xyz="0.081 0.05 0.237"/>
+    <origin rpy="-1.57099592069 1.57038480649 2.75923e-05" xyz="0.080562902 0.0500598564 0.237"/>
     <parent link="right_l0"/>
     <child link="right_l1"/>
     <axis xyz="0 0 1"/>
@@ -251,7 +251,7 @@
     </collision>
   </link>
   <joint name="right_j2" type="revolute">
-    <origin rpy="1.57079632679 0 0" xyz="0 -0.14 0.1425"/>
+    <origin rpy="1.56964620609 0.0013338202 0.001673633" xyz="-0.0003271857 -0.1402331099 0.1426167268"/>
     <parent link="right_l1"/>
     <child link="right_l2"/>
     <axis xyz="0 0 1"/>
@@ -281,7 +281,7 @@
     </collision>
   </link>
   <joint name="right_j3" type="revolute">
-    <origin rpy="-1.57079632679 0 0" xyz="0 -0.042 0.26"/>
+    <origin rpy="-1.57208051179 -0.0007098157 -0.0012794286" xyz="-0.0001859204 -0.0419355268 0.2597852048"/>
     <parent link="right_l2"/>
     <child link="right_l3"/>
     <axis xyz="0 0 1"/>
@@ -311,7 +311,7 @@
     </collision>
   </link>
   <joint name="right_j4" type="revolute">
-    <origin rpy="1.57079632679 0 0" xyz="0 -0.125 -0.1265"/>
+    <origin rpy="1.57045446649 -0.0021863709 0.0037312215" xyz="-0.0005718529 -0.1251959063 -0.126478624"/>
     <parent link="right_l3"/>
     <child link="right_l4"/>
     <axis xyz="0 0 1"/>
@@ -356,7 +356,7 @@
     </collision>
   </link>
   <joint name="right_j5" type="revolute">
-    <origin rpy="-1.57079632679 0 0" xyz="0 0.031 0.275"/>
+    <origin rpy="-1.57060120179 0.0028546724 0.0016908371" xyz="9.99503e-05 0.0305539513 0.274694147"/>
     <parent link="right_l4"/>
     <child link="right_l5"/>
     <axis xyz="0 0 1"/>
@@ -367,7 +367,7 @@
   </joint>
   <link name="right_hand_camera"/>
   <joint name="right_hand_camera" type="fixed">
-    <origin rpy="0 1.57079632679 0" xyz="0.039552 -0.033 0.0695"/>
+    <origin rpy="0.746138564105 1.54985201766 0.782687319262" xyz="0.0385715749764 -0.0325252183853 0.068944953023"/>
     <parent link="right_l5"/>
     <child link="right_hand_camera"/>
     <axis xyz="0 0 0"/>
@@ -400,7 +400,7 @@
     </collision>
   </link>
   <joint name="right_j6" type="revolute">
-    <origin rpy="-1.57079632679 -0.17453 3.1416" xyz="0 -0.11 0.1053"/>
+    <origin rpy="-1.56953611109 -0.17953 3.1422744561" xyz="0.0001394481 -0.1098312125 0.1049093833"/>
     <parent link="right_l5"/>
     <child link="right_l6"/>
     <axis xyz="0 0 1"/>
@@ -532,7 +532,7 @@
   </joint>
   <link name="head_camera"/>
   <joint name="head_camera" type="fixed">
-    <origin rpy="-2.1293 0 -1.57079632679" xyz="0.0228027 0 0.216572"/>
+    <origin rpy="-2.12381291814 0.00538492345377 -1.57079632679" xyz="0.0256176309412 0.00205684237621 0.215221326171"/>
     <parent link="head"/>
     <child link="head_camera"/>
     <axis xyz="0 0 0"/>
